@@ -73,7 +73,7 @@
           placeholder="请输入邮箱"
           v-model="email"
           clearable
-          style="margin-top: 20px"
+          style="margin-top: 20px;border-right:none"
         >
         </el-input>
         <el-input
@@ -81,11 +81,12 @@
           v-model="emailyzm"
           clearable
           style="margin-top: 20px; width: 60%"
+          @focus='Yzmfocus'
         >
         </el-input>
         <el-button style="width: 40%" type="primary" v-show="YxmShow" plain @click="RecoverYzm">获取验证码</el-button>
         <el-button v-show="!YxmShow" style="width: 35%" disabled>{{msg}}</el-button>
-        <el-button style="margin-top: 20px; margin-bottom: 20px" type="primary"
+        <el-button style="margin-top: 20px; margin-bottom: 20px" type="primary" @click="Sendregister"
           >立即注册</el-button
         >
       </div>
@@ -132,7 +133,9 @@ export default {
     //   计时器
       time:'',
     //   显示倒计时
-      YxmShow:true
+      YxmShow:true,
+    //   存储返回来的验证码
+    endemailcode:''
     };
   },
   created() {
@@ -143,7 +146,7 @@ export default {
     //   监听倒计时数值变化
       count(old,newvalue){
           console.log(old,newvalue)
-          if(old<=50){
+          if(old<=0){
             //   清除计时器
               clearInterval(this.time)
             //   显示获取验证码并且置计数于原数值
@@ -167,6 +170,8 @@ export default {
     //   切换时候用户名和密码进行置空操作
       this.username=''
       this.paswd=''
+      this.email=''
+      this.emailyzm=''
       if (index === 0) {
         this.login = true;
         this.register = false;
@@ -204,16 +209,58 @@ export default {
         }
         }
     },
+    // 进行注册
+    Sendregister(){
+        var that=this
+        if(that.username===''||that.paswd===''||that.email===''||that.emailyzm===''){
+            that.$message({
+                type:'warning',
+                message:'注意检查，必填项不能为空！'
+            })
+        }else{
+            if(that.emailyzm!=that.endemailcode){
+                 that.$message({
+                    type:'error',
+                    message:'验证码输入错误，请检查！'
+                })
+            }
+        }
+
+    },
+    // 输入验证码验证邮箱
+    Yzmfocus(){
+         var reg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$"); //正则表达式
+         if(!reg.test(this.email)){
+             this.$message('请输入正确的邮箱！')
+         }
+    },
     // 注册发送验证码
     RecoverYzm(){
         var that=this
-        // 开启倒计时显示
-        that.YxmShow=false
-        // 计时器
-       that.time=setInterval(()=>{
-            that.count-=1
-            that.msg=that.count+'秒'
-        },1000)
+        var reg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$"); //正则表达式
+         if(!reg.test(that.email)){
+             that.$message('请输入正确的邮箱！')
+         }else{
+             that.$get(`/email?email=${that.email}`).then(res=>{
+                 console.log(res)
+                 if(res.code===200){
+                     that.$message({
+                         type:'success',
+                         message:'验证码已经发送至邮箱，请注意查收！'
+                     })
+                     that.endemailcode=that.uncompileStr(res.emailcode)
+                     console.log(that.endemailcode)
+                     // 开启倒计时显示
+                    that.YxmShow=false
+                    // 计时器
+                    that.time=setInterval(()=>{
+                        that.count-=1
+                        that.msg=that.count+'秒'
+                    },1000)
+                 }
+             })
+        
+         } 
     },
     // 点击变换验证码
     creatYzm(){
@@ -228,8 +275,21 @@ export default {
             res += chars[id];
         }
         return res;
-    }
+    },
+    // 字符串进行解密(因为返回数据时候进行了验证码的加密处理，在此处需要进行相关的解密)
+    uncompileStr(code) {
+      code = unescape(code)
+      var c = String.fromCharCode(code.charCodeAt(0) - code.length)
+      for (var i = 1; i < code.length; i++) {
+        c += String.fromCharCode(code.charCodeAt(i) - c.charCodeAt(i - 1))
+      }
+      return c
+    },
   },
+//   销毁计时器
+  destroyed(){
+      clearInterval(this.time)
+  }
 };
 </script>
 

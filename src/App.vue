@@ -31,9 +31,9 @@ export default {
   //                          "                                                    \n"+
   //                          "....................佛祖保佑 ,永无BUG...................");
   // },
-  // mounted(){
-  //   console.log('联系我们请投邮箱：1848514604@qq.com')
-  // }
+  mounted(){
+    console.log('联系我们请投邮箱：1848514604@qq.com')
+  }
 }
 </script>
 
