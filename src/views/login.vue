@@ -1,6 +1,8 @@
 <template>
   <div class="login">
+      <!-- 登录模块 -->
     <div class="content" v-if="login">
+         <!-- 渲染登录注册菜单 -->
       <ul>
         <li
           v-for="(item, index) in options"
@@ -40,7 +42,9 @@
         >
       </div>
     </div>
+    <!-- 注册模块 -->
     <div class="content" v-if="register">
+        <!-- 渲染登录注册菜单 -->
       <ul>
         <li
           v-for="(item, index) in options"
@@ -142,6 +146,7 @@ export default {
           if(old<=50){
             //   清除计时器
               clearInterval(this.time)
+            //   显示获取验证码并且置计数于原数值
               this.YxmShow=true
               this.count=60
               this.msg='60秒'
@@ -188,11 +193,13 @@ export default {
                 message:'仔细核查，必填项不能为空！'
             })
         }else{
+            // 因为验证码全部为大写所以在判断时候进行相应的转换
              if((that.yzm).toUpperCase()!=that.random_yzm){
             that.$message({
                 type:'warning',
                 message:'验证码输入有误！'
             })
+            // 调用验证码进行刷新
             that.creatYzm()
         }
         }
@@ -200,7 +207,9 @@ export default {
     // 注册发送验证码
     RecoverYzm(){
         var that=this
+        // 开启倒计时显示
         that.YxmShow=false
+        // 计时器
        that.time=setInterval(()=>{
             that.count-=1
             that.msg=that.count+'秒'
@@ -228,7 +237,6 @@ export default {
 .login {
   width: 100%;
   height: 100%;
-  /* background-color: aquamarine; */
   background: url('../../public/bg.jpg') no-repeat;
   background-size: cover;
   position: relative;
@@ -240,7 +248,6 @@ export default {
   top: 15%;
   left: 15%;
   opacity: 0.8;
-  /* background-color: transparent; */
 }
 .content ul {
   width: 100%;
@@ -250,7 +257,6 @@ export default {
 .content ul li {
   float: left;
   flex: 1;
-  background-color: bisque;
 }
 .content ul li:hover {
   cursor: pointer;
@@ -258,7 +264,6 @@ export default {
 .content_bottom {
   width: 80%;
   margin: 0 auto;
-  /* background-color: skyblue; */
 }
 .sjyam:hover{
     cursor:default;
