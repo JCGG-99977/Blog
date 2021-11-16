@@ -245,7 +245,7 @@ export default {
   width: 350px;
   background-color: #fff;
   position: absolute;
-  top: 15%;
+  top: 30%;
   left: 15%;
   opacity: 0.8;
 }
