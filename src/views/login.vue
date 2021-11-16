@@ -79,7 +79,8 @@
           style="margin-top: 20px; width: 60%"
         >
         </el-input>
-        <el-button style="width: 40%" type="primary" plain>{{ msg }}</el-button>
+        <el-button style="width: 40%" type="primary" v-show="YxmShow" plain @click="RecoverYzm">获取验证码</el-button>
+        <el-button v-show="!YxmShow" style="width: 35%" disabled>{{msg}}</el-button>
         <el-button style="margin-top: 20px; margin-bottom: 20px" type="primary"
           >立即注册</el-button
         >
@@ -114,19 +115,38 @@ export default {
       paswd: "",
       //   登录验证码
       yzm: "",
-    //   随机验证码生成
+     //   随机验证码生成
       random_yzm:'',
       //   注册邮箱
       email: "",
       // 邮箱验证码
       emailyzm: "",
       // 邮箱提示收发验证码
-      msg: "获取验证码",
+      msg: "60秒",
+    //   进行计时
+      count:60,
+    //   计时器
+      time:'',
+    //   显示倒计时
+      YxmShow:true
     };
   },
   created() {
-      this.random_yzm=this.RandomYzm(5)
-      console.log()
+    //   进行调用验证码
+     this.creatYzm()
+  },
+  watch:{
+    //   监听倒计时数值变化
+      count(old,newvalue){
+          console.log(old,newvalue)
+          if(old<=50){
+            //   清除计时器
+              clearInterval(this.time)
+              this.YxmShow=true
+              this.count=60
+              this.msg='60秒'
+          }
+      }
   },
   mounted() {
     //   初始改变登录的显示样式
@@ -139,6 +159,7 @@ export default {
     //   转换登录和注册
     ChangeLogin(index) {
       let ul = document.querySelector(".content ul");
+    //   切换时候用户名和密码进行置空操作
       this.username=''
       this.paswd=''
       if (index === 0) {
@@ -157,8 +178,10 @@ export default {
         ul.childNodes[0].style.color = "#fff";
       }
     },
+    // 进行登录
     SendLogin(){
         var that=this
+        // 判断输入用户名、密码、验证码是否为空
         if(that.username===''||that.paswd===''||that.yzm===''){
             that.$message({
                 type:'warning',
@@ -173,7 +196,15 @@ export default {
             that.creatYzm()
         }
         }
-       
+    },
+    // 注册发送验证码
+    RecoverYzm(){
+        var that=this
+        that.YxmShow=false
+       that.time=setInterval(()=>{
+            that.count-=1
+            that.msg=that.count+'秒'
+        },1000)
     },
     // 点击变换验证码
     creatYzm(){
@@ -197,15 +228,19 @@ export default {
 .login {
   width: 100%;
   height: 100%;
-  background-color: aquamarine;
+  /* background-color: aquamarine; */
+  background: url('../../public/bg.jpg') no-repeat;
+  background-size: cover;
   position: relative;
 }
 .content {
   width: 350px;
   background-color: #fff;
   position: absolute;
-  top: 30%;
-  left: 60%;
+  top: 15%;
+  left: 15%;
+  opacity: 0.8;
+  /* background-color: transparent; */
 }
 .content ul {
   width: 100%;
