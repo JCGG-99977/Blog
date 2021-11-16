@@ -165,8 +165,7 @@ export default {
   },
   watch: {
     //   监听倒计时数值变化
-    count(old, newvalue) {
-      console.log(old, newvalue);
+    count(old) {
       if (old <= 0) {
         //   清除计时器
         clearInterval(this.time);
@@ -286,6 +285,34 @@ export default {
             type: "error",
             message: "验证码输入错误，请检查！",
           });
+        }else{
+             that.$get(`/login?user=${that.username}`).then((res) => {
+                 if(res.code===200){
+                     if(res.result.length!==0){
+                         that.$message({
+                             type:'error',
+                             message:'此用户已存在！'
+                         })
+                     }else{
+                            let data={
+                            user:that.username,
+                            pwd:that.paswd,
+                            time:that.timestampToTime(Date.now()),
+                            email:that.email,
+                            emailcode:that.emailyzm
+                        }
+                        that.$post('/login',data).then(res=>{
+                            if(res.code===200){
+                                that.$message({
+                                    type:'success',
+                                    message:'注册成功，请登录！'
+                                })
+                            }
+                        })
+                     }
+                 }
+             })
+         
         }
       }
     },
@@ -308,14 +335,12 @@ export default {
         that.$message("请输入正确的邮箱！");
       } else {
         that.$get(`/email?email=${that.email}`).then((res) => {
-          console.log(res);
           if (res.code === 200) {
             that.$message({
               type: "success",
               message: "验证码已经发送至邮箱，请注意查收！",
             });
             that.endemailcode = that.uncompileStr(res.emailcode);
-            console.log(that.endemailcode);
             // 开启倒计时显示
             that.YxmShow = false;
             // 计时器
@@ -330,6 +355,17 @@ export default {
     // 点击变换验证码
     creatYzm() {
       this.random_yzm = this.RandomYzm(5);
+    },
+        // 时间转换以及补零操作
+    timestampToTime(timestamp) {
+      var date = new Date(timestamp)
+      var Y = date.getFullYear() + '-'
+      var M = (date.getMonth() + 1).toString().padStart(2, '0') + '-'
+      var D = date.getDate().toString().padStart(2, '0') + ' '
+      var h = date.getHours().toString().padStart(2, '0') + ':'
+      var m = date.getMinutes().toString().padStart(2, '0') + ':'
+      var s = date.getSeconds().toString().padStart(2, '0')
+      return Y + M + D + h + m + s
     },
     // 随机生成登录验证码
     RandomYzm(n) {
