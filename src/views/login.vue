@@ -229,7 +229,7 @@ export default {
         } else {
           // 进行登录接口调用校验
           that
-            .$get(`/login?user=${that.username}`)
+            .$get(`/login?user=${that.username}&pwd=${that.paswd}`)
             .then((res) => {
               if (res.code === 200) {
                 // 存在用户数据
@@ -244,6 +244,8 @@ export default {
                           type: "success",
                           message: "登录成功",
                         });
+                        sessionStorage.setItem("id", res.result[0].id);
+                        that.$store.state.id=res.result[0].id
                         that.$router.push("/homepage");
                       }
                     } else if (
@@ -268,7 +270,7 @@ export default {
             .catch((e) => {
               that.$message({
                 type: "error",
-                message: "登录失败，请稍后重试！",
+                message: "登录失败，请稍后重试！" + e,
               });
             });
         }
@@ -294,13 +296,20 @@ export default {
             message: "验证码输入错误，请检查！",
           });
         } else {
-          that.$get(`/login?user=${that.username}`).then((res) => {
+               const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
+          that.$get(`/login?user=${that.username}&pwd=${that.paswd}`).then((res) => {
             if (res.code === 200) {
               if (res.result.length !== 0) {
                 that.$message({
                   type: "error",
                   message: "此用户已存在！",
                 });
+                loading.close()
               } else {
                 let data = {
                   user: that.username,
@@ -318,27 +327,31 @@ export default {
                         message: "注册成功，即将自动登录",
                       });
                       that
-                        .$get(`/login?user=${that.username}`)
+                        .$get(`/login?user=${that.username}&pwd=${that.paswd}`)
                         .then((res) => {
                           console.log(res);
                           if (res.code === 200) {
+                              loading.close()
                             sessionStorage.setItem("id", res.result[0].id);
+                            that.$store.state.id=res.result[0].id
                             that.$router.push("/homepage");
                           }
                         })
                         .catch((e) => {
                           that.$message({
                             type: "error",
-                            message: "自动登录失败，请稍后重试！",
+                            message: "自动登录失败，请稍后重试！" + e,
                           });
+                          loading.close()
                         });
                     }
                   })
                   .catch((e) => {
                     that.$message({
                       type: "error",
-                      message: "注册失败，请稍后重试！",
+                      message: "注册失败，请稍后重试！" + e,
                     });
+                    loading.close()
                   });
               }
             }
@@ -385,7 +398,7 @@ export default {
           .catch((e) => {
             that.$message({
               type: "error",
-              message: "验证码发送失败，请稍后重试！",
+              message: "验证码发送失败，请稍后重试！" + e,
             });
           });
       }
