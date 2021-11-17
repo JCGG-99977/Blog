@@ -246,7 +246,7 @@ export default {
                         });
                         sessionStorage.setItem("id", res.result[0].id);
                         that.$store.state.id=res.result[0].id
-                        that.$router.push("/homepage");
+                        that.$router.push("/");
                       }
                     } else if (
                       that.username !== res.result[i].user ||
@@ -334,7 +334,7 @@ export default {
                               loading.close()
                             sessionStorage.setItem("id", res.result[0].id);
                             that.$store.state.id=res.result[0].id
-                            that.$router.push("/homepage");
+                            that.$router.push("/");
                           }
                         })
                         .catch((e) => {
@@ -498,10 +498,11 @@ export default {
   left: 15%;
   opacity: 0.8;
 }
-.content ul {
+.login .content ul {
   width: 100%;
   display: flex;
   line-height: 50px;
+  text-align: center;
 }
 .content ul li {
   float: left;

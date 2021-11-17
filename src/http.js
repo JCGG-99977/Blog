@@ -1,6 +1,6 @@
 import axios from 'axios'
 // 环境
-axios.defaults.baseURL = 'http://127.0.0.1:3333' // 开发环境
+axios.defaults.baseURL = 'http://192.168.1.80:3333' // 开发环境
 
 // 请求超时时间
 axios.defaults.timeout = 5000

@@ -4,6 +4,10 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import router from './router'
 import vuex from 'vuex'
+import $ from 'jquery'
+// 编辑器
+import mavonEditor from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
 
 import {
   post,
@@ -16,9 +20,10 @@ Vue.prototype.$post = post
 Vue.prototype.$get = get
 Vue.prototype.$put = put
 Vue.prototype.$delete = del
+Vue.prototype.$=$
 Vue.use(vuex)
 Vue.use(ElementUI);
-
+Vue.use(mavonEditor)
 Vue.config.productionTip = false
 // vuex
 const store = new vuex.Store({
