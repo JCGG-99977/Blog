@@ -227,42 +227,50 @@ export default {
           // 调用验证码进行刷新
           that.creatYzm();
         } else {
-            // 进行登录接口调用校验
-          that.$get(`/login?user=${that.username}`).then((res) => {
-            if (res.code === 200) {
+          // 进行登录接口调用校验
+          that
+            .$get(`/login?user=${that.username}`)
+            .then((res) => {
+              if (res.code === 200) {
                 // 存在用户数据
-              if (res.result.length !== 0) {
-                for (var i = 0; i < res.result.length; i++) {
-                  if (
-                    that.username === res.result[i].user &&
-                    that.paswd === res.result[i].pwd
-                  ) {
-                    if (res.code === 200) {
+                if (res.result.length !== 0) {
+                  for (var i = 0; i < res.result.length; i++) {
+                    if (
+                      that.username === res.result[i].user &&
+                      that.paswd === res.result[i].pwd
+                    ) {
+                      if (res.code === 200) {
+                        that.$message({
+                          type: "success",
+                          message: "登录成功",
+                        });
+                        that.$router.push("/homepage");
+                      }
+                    } else if (
+                      that.username !== res.result[i].user ||
+                      that.paswd !== res.result[i].pwd
+                    ) {
                       that.$message({
-                        type: "success",
-                        message: "登录成功",
+                        type: "error",
+                        message: "用户名或者密码错误",
                       });
-                      that.$router.push("/homepage");
                     }
-                  } else if (
-                    that.username !== res.result[i].user ||
-                    that.paswd !== res.result[i].pwd
-                  ) {
-                    that.$message({
-                      type: "error",
-                      message: "用户名或者密码错误",
-                    });
                   }
+                } else {
+                  //   用户数据不存在
+                  that.$message({
+                    type: "error",
+                    message: "该用户不存在,请注册后进行登录",
+                  });
                 }
-              } else {
-                //   用户数据不存在
-                that.$message({
-                  type: "error",
-                  message: "该用户不存在,请注册后进行登录",
-                });
               }
-            }
-          });
+            })
+            .catch((e) => {
+              that.$message({
+                type: "error",
+                message: "登录失败，请稍后重试！",
+              });
+            });
         }
       }
     },
@@ -285,34 +293,56 @@ export default {
             type: "error",
             message: "验证码输入错误，请检查！",
           });
-        }else{
-             that.$get(`/login?user=${that.username}`).then((res) => {
-                 if(res.code===200){
-                     if(res.result.length!==0){
-                         that.$message({
-                             type:'error',
-                             message:'此用户已存在！'
-                         })
-                     }else{
-                            let data={
-                            user:that.username,
-                            pwd:that.paswd,
-                            time:that.timestampToTime(Date.now()),
-                            email:that.email,
-                            emailcode:that.emailyzm
-                        }
-                        that.$post('/login',data).then(res=>{
-                            if(res.code===200){
-                                that.$message({
-                                    type:'success',
-                                    message:'注册成功，请登录！'
-                                })
-                            }
+        } else {
+          that.$get(`/login?user=${that.username}`).then((res) => {
+            if (res.code === 200) {
+              if (res.result.length !== 0) {
+                that.$message({
+                  type: "error",
+                  message: "此用户已存在！",
+                });
+              } else {
+                let data = {
+                  user: that.username,
+                  pwd: that.paswd,
+                  time: that.timestampToTime(Date.now()),
+                  email: that.email,
+                  emailcode: that.emailyzm,
+                };
+                that
+                  .$post("/login", data)
+                  .then((res) => {
+                    if (res.code === 200) {
+                      that.$message({
+                        type: "success",
+                        message: "注册成功，即将自动登录",
+                      });
+                      that
+                        .$get(`/login?user=${that.username}`)
+                        .then((res) => {
+                          console.log(res);
+                          if (res.code === 200) {
+                            sessionStorage.setItem("id", res.result[0].id);
+                            that.$router.push("/homepage");
+                          }
                         })
-                     }
-                 }
-             })
-         
+                        .catch((e) => {
+                          that.$message({
+                            type: "error",
+                            message: "自动登录失败，请稍后重试！",
+                          });
+                        });
+                    }
+                  })
+                  .catch((e) => {
+                    that.$message({
+                      type: "error",
+                      message: "注册失败，请稍后重试！",
+                    });
+                  });
+              }
+            }
+          });
         }
       }
     },
@@ -334,38 +364,46 @@ export default {
       if (!reg.test(that.email)) {
         that.$message("请输入正确的邮箱！");
       } else {
-        that.$get(`/email?email=${that.email}`).then((res) => {
-          if (res.code === 200) {
+        that
+          .$get(`/email?email=${that.email}`)
+          .then((res) => {
+            if (res.code === 200) {
+              that.$message({
+                type: "success",
+                message: "验证码已经发送至邮箱，请注意查收！",
+              });
+              that.endemailcode = that.uncompileStr(res.emailcode);
+              // 开启倒计时显示
+              that.YxmShow = false;
+              // 计时器
+              that.time = setInterval(() => {
+                that.count -= 1;
+                that.msg = that.count + "秒";
+              }, 1000);
+            }
+          })
+          .catch((e) => {
             that.$message({
-              type: "success",
-              message: "验证码已经发送至邮箱，请注意查收！",
+              type: "error",
+              message: "验证码发送失败，请稍后重试！",
             });
-            that.endemailcode = that.uncompileStr(res.emailcode);
-            // 开启倒计时显示
-            that.YxmShow = false;
-            // 计时器
-            that.time = setInterval(() => {
-              that.count -= 1;
-              that.msg = that.count + "秒";
-            }, 1000);
-          }
-        });
+          });
       }
     },
     // 点击变换验证码
     creatYzm() {
       this.random_yzm = this.RandomYzm(5);
     },
-        // 时间转换以及补零操作
+    // 时间转换以及补零操作
     timestampToTime(timestamp) {
-      var date = new Date(timestamp)
-      var Y = date.getFullYear() + '-'
-      var M = (date.getMonth() + 1).toString().padStart(2, '0') + '-'
-      var D = date.getDate().toString().padStart(2, '0') + ' '
-      var h = date.getHours().toString().padStart(2, '0') + ':'
-      var m = date.getMinutes().toString().padStart(2, '0') + ':'
-      var s = date.getSeconds().toString().padStart(2, '0')
-      return Y + M + D + h + m + s
+      var date = new Date(timestamp);
+      var Y = date.getFullYear() + "-";
+      var M = (date.getMonth() + 1).toString().padStart(2, "0") + "-";
+      var D = date.getDate().toString().padStart(2, "0") + " ";
+      var h = date.getHours().toString().padStart(2, "0") + ":";
+      var m = date.getMinutes().toString().padStart(2, "0") + ":";
+      var s = date.getSeconds().toString().padStart(2, "0");
+      return Y + M + D + h + m + s;
     },
     // 随机生成登录验证码
     RandomYzm(n) {
