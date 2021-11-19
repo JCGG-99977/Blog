@@ -3,7 +3,7 @@ import axios from 'axios'
 axios.defaults.baseURL = 'http://192.168.1.80:3333' // 开发环境
 
 // 请求超时时间
-axios.defaults.timeout = 5000
+// axios.defaults.timeout = 5000
 
 /**
  * 封装get方法

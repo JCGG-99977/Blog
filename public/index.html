@@ -1,17 +1,40 @@
 <!DOCTYPE html>
 <html lang="">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>bac.ico">
-    <title>Blog</title>
-  </head>
-  <body>
-    <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" href="<%= BASE_URL %>bac.ico">
+  <link href="https://cdn.bootcss.com/github-markdown-css/2.10.0/github-markdown.min.css" rel="stylesheet">
+  <title>Blog</title>
+</head>
+
+<body>
+  <noscript>
+    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
+        Please enable it to continue.</strong>
+  </noscript>
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+  <!-- <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=f7725eb0233cc0a6b17961b4d9c9bfe0"></script>  -->
+  <script>
+    window.onload = function () {
+      getIp()
+      function getIp() {
+        return new Promise((resolve, reject) => {
+          var script = document.createElement('script')
+          script.src = 'http://pv.sohu.com/cityjson?ie=utf-8'
+          script.onload = function () {
+            resolve(window.returnCitySN)
+            sessionStorage.setItem('ip',window.returnCitySN.cip)
+            sessionStorage.setItem('adress',window.returnCitySN.cname)
+          }
+          document.body.appendChild(script)
+        })
+      }
+    }()
+  </script>
+</body>
+
 </html>

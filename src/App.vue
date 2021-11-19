@@ -45,6 +45,8 @@ export default {
 html,body{
   width: 100%;
   height: 100%;
+  background-color: #f5f6f7;
+
 }
 ul>li{
   list-style: none;
@@ -61,5 +63,6 @@ a{
   color: #2c3e50;
   /* margin-top: 60px; */
   height: 100%;
+  background-color: #f5f6f7;
 }
 </style>
