@@ -18,6 +18,7 @@
           v-model="username"
           clearable
           style="margin-top: 20px"
+          @keyup.enter.native='SendLogin'
         >
         </el-input>
         <el-input
@@ -26,12 +27,14 @@
           show-password
           clearable
           style="margin-top: 20px"
+          @keyup.enter.native='SendLogin'
         ></el-input>
         <el-input
           placeholder="请输入验证码"
           v-model="yzm"
           clearable
           style="margin-top: 20px; width: 80%"
+          @keyup.enter.native='SendLogin'
         >
         </el-input>
         <span
@@ -47,6 +50,7 @@
           style="margin-top: 20px; margin-bottom: 20px"
           type="primary"
           @click="SendLogin"
+          @keyup.enter.native='SendLogin'
           >立即登录</el-button
         >
       </div>
@@ -69,6 +73,7 @@
           v-model="username"
           clearable
           style="margin-top: 20px"
+          @keyup.enter.native='Sendregister'
         >
         </el-input>
         <el-input
@@ -77,12 +82,14 @@
           show-password
           clearable
           style="margin-top: 20px"
+           @keyup.enter.native='Sendregister'
         ></el-input>
         <el-input
           placeholder="请输入邮箱"
           v-model="email"
           clearable
           style="margin-top: 20px; border-right: none"
+           @keyup.enter.native='Sendregister'
         >
         </el-input>
         <el-input
@@ -91,6 +98,7 @@
           clearable
           style="margin-top: 20px; width: 60%"
           @focus="Yzmfocus"
+           @keyup.enter.native='Sendregister'
         >
         </el-input>
         <el-button
@@ -108,6 +116,7 @@
           style="margin-top: 20px; margin-bottom: 20px"
           type="primary"
           @click="Sendregister"
+           @keyup.enter.native='Sendregister'
           >立即注册</el-button
         >
       </div>
@@ -162,6 +171,21 @@ export default {
   created() {
     //   进行调用验证码
     this.creatYzm();
+    if(sessionStorage.getItem('id')!==undefined){
+      this.$get(`/dg_msg/user?id=${sessionStorage.getItem('id')}`).then((res) => {
+        if(res.code===200){
+          if(res.result.length!==0){
+              sessionStorage.setItem("id", res.result[0].id);
+              this.$store.state.id=res.result[0].id
+              this.$router.push("/");
+              this.$message({
+                type:'warning',
+                message:'已经登录，重新登录请点击退出！'
+              })
+          }
+        }
+      })
+    }
   },
   watch: {
     //   监听倒计时数值变化

@@ -32,9 +32,13 @@
       width="180">
     </el-table-column>
     <el-table-column
-      prop="pwd"
-      label="密码"
+      prop="del_on"
+      label="是否注销"
       >
+       <template slot-scope="scope">
+         <span v-if="scope.row.del_on==='0'">正常</span>
+         <span v-if="scope.row.del_on==='1'">已注销</span>
+       </template>
     </el-table-column>
     <el-table-column
       prop="nickname"

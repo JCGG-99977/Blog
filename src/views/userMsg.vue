@@ -12,6 +12,8 @@
           </li>
         </ul>
       </div>
+      <!-- 兄弟元素占位 -->
+      <div class="content_left_zw"></div>
       <div class="content_right">
         <!-- 个人的信息 -->
         <!-- <userperson v-if="userShow"></userperson> -->
@@ -90,6 +92,10 @@ export default {
                 text: "用户管理",
                 id: "",
               },
+               {
+                text: "评论管理",
+                id: "",
+              },
             ];
           }else{
                this.options = [
@@ -126,6 +132,8 @@ export default {
         this.$router.push("/userMsg/blogmanager");
       } else if (index === 4) {
         this.$router.push("/userMsg/usermanager");
+      }else if (index === 5) {
+        this.$router.push("/userMsg/comment");
       }
     },
   },
@@ -135,23 +143,25 @@ export default {
 <style>
 .userMsg {
   width: 100%;
-  /* height: 100%; */
   background-color: #f5f6f7;
-  /* background: url('../../static/bg.gif'); */
   display: inline-block;
 }
 .user_content {
   width: 1400px;
-  /* height: 100%; */
   margin: 0 auto;
   display: flex;
   flex-direction: row;
 }
 .content_left {
-  flex: 1;
   text-align: center;
   margin-top: 10px;
-  display: fixed;
+  position: fixed;
+  width: 230px;
+}
+.content_left_zw{
+flex: 1;
+  text-align: center;
+  margin-top: 10px;
 }
 .content_left ul {
   background-color: #fff;
@@ -168,9 +178,12 @@ export default {
 }
 .content_right {
   flex: 5;
-  /* background-color: aquamarine; */
   margin-left: 10px;
   margin-top: 10px;
-  /* overflow: auto; */
+}
+@media screen and (max-width:600){
+  .user_content{
+    width: 400px !important;
+  }
 }
 </style>

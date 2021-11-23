@@ -1,6 +1,6 @@
 <template>
   <div class="index">
-    <div class="home_head">
+    <div class="home_head" v-if="$route.name !== 'searchblog'">
       <div class="head_content">
         <ul>
           <li>
@@ -10,7 +10,12 @@
               class="input-with-select"
               clearable
             >
-              <el-button slot="append" icon="el-icon-search"></el-button>
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="Search_content"
+              >
+              </el-button>
             </el-input>
           </li>
           <li>
@@ -92,7 +97,7 @@
       </div>
     </div>
     <!-- 占位的兄弟元素 -->
-    <div class="home_head_brother"></div>
+    <div class="home_head_brother" v-if="$route.name !== 'searchblog'"></div>
     <div class="home_other">
       <router-view></router-view>
     </div>
@@ -132,39 +137,27 @@ export default {
         }
       });
     },
-    // 查询天气
-    searchBtn() {
-      //判断输入框是否为空
-      if (this.search_weather == "") {
+    Search_content() {
+      if (this.search_blog === "") {
         this.$message({
-          message: "请输入城市名",
-          type: "error",
+          message: "请输入搜索内容",
+          type: "warning",
         });
       } else {
-        //axios进行请求的擦擦送
-        this.$get(
-          "http://wthrcdn.etouch.cn/weather_mini?city=" + this.search_weather
-        ).then((res) => {
-          //返回状态正常
-          if (res.desc === "OK") {
-            this.$message({
-              message: `共查找到 ${res.data.forecast.length + 1} 条数据`,
-              type: "success",
-            });
-            this.weather_show = true;
-            this.weather = res.data;
-            // console.log(this.weather)
-          } else if (res.desc == "invilad-citykey") {
-            //如果查询城市状态异常
-            this.$message({
-              message: "请输入正确的城市名",
-              type: "warning",
-            });
-            //输入框置空
-            this.search_weather = "";
-          }
-          //请求发送异常
-        });
+        //  this.$router.replace({
+        //     path: 'searchblog',
+        // query: {
+        //     content:this.search_blog
+        // }
+        // })
+        window.open(
+          "http://192.168.1.80:8080/searchblog?content=" + this.search_blog
+        );
+        this.search_blog = "";
+        //   this.$get(`/search/see_user_blog?title=${this.search_blog}`).then(res=>{
+        // console.log(res)
+        // this.$router.replace('searchblog')
+        // })
       }
     },
     // 退出
@@ -192,6 +185,7 @@ export default {
   background-color: #fff;
   position: fixed;
   overflow: hidden;
+  z-index: 99;
 }
 /* 中心内容 */
 .head_content {
@@ -208,6 +202,9 @@ export default {
 }
 .head_content ul li:first-child {
   width: 600px;
+}
+.head_content ul li:first-child:hover {
+  background-color: transparent;
 }
 .head_content ul li {
   width: 100px;
@@ -228,6 +225,29 @@ export default {
   width: 100%;
   height: 95%;
   background-color: #f5f6f7;
-      /* background: url('../static/bg.gif'); */
+  /* background: url('../static/bg.gif'); */
+}
+@media screen and (max-width: 600px) {
+  .home_head {
+    width: 400px;
+    font-size: 14px;
+    height: 50px;
+  }
+  .head_content {
+    width: 350px;
+  }
+  .home_head_brother {
+    width: 350px;
+  }
+  .head_content ul li:first-child {
+    width: 200px;
+  }
+  .head_content ul li {
+    width: 40px;
+    margin-left: 3px;
+  }
+  .content_homepage {
+    width: 350px;
+  }
 }
 </style>

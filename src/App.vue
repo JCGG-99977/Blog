@@ -64,5 +64,8 @@ a{
   /* margin-top: 60px; */
   height: 100%;
   background-color: #f5f6f7;
+  /* overflow-y:hidden */
+  overflow: auto;
 }
+#app::-webkit-scrollbar { display: none; }
 </style>

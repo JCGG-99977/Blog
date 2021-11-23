@@ -11,7 +11,7 @@
         v-model="title"
         maxlength="10"
         show-word-limit
-        style="width: 80%; margin-left: 20px"
+        style="width:50%; margin-left: 20px"
       >
       </el-input>
       <el-button type="primary" style="margin-left: 20px" @click="submitBlog"
@@ -216,9 +216,8 @@ export default {
             user: this.userData.user,
             title: this.title,
             content: this.$refs.md.d_render,
-            user_dz: 0,
+            user_pl: 0,
             user_see: 0,
-            user_zf: 0,
             content_type: Number(this.type),
             data_time: this.timestampToTime(Date.now()),
             status: 0,
@@ -258,9 +257,8 @@ export default {
           user: this.userData.user,
           title: this.title,
           content: this.$refs.md.d_render,
-          user_dz: 0,
+          user_pl: 0,
           user_see: 0,
-          user_zf: 0,
           content_type: Number(this.type),
           data_time: this.timestampToTime(Date.now()),
           status: 0,
@@ -324,7 +322,6 @@ export default {
 .write {
   width: 100%;
   height: 100%;
-  background-color: palegreen;
 }
 .write_head {
   width: 100%;
@@ -340,10 +337,18 @@ export default {
   height: 94%;
   background-color: steelblue;
 }
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 600px) {
+   .write_head{
+   height: 60px;
+   line-height: 70px;
+  }
   .write_head,
   .write_bottom {
-    width: 1200px;
+    width: 450px;
   }
+  .write_head span{
+    font-size: 10px;
+  }
+ 
 }
 </style>

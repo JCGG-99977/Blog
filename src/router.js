@@ -24,6 +24,10 @@ import userblog from '@/user/userblog'
 import blogmanager from '@/Manager/blogmanager'
 // 用户管理
 import usermanager from '@/Manager/usermanager'
+// 评论管理
+import comment from '@/Manager/commentmanager'
+// 搜索内容
+import searchblog from '@/views/searchBlog'
  
 Vue.use(Router)
 const originalPush = Router.prototype.push
@@ -53,13 +57,15 @@ export default new Router({
                     {path:'/userMsg/userMsg',name:'userperson',component:userperson},
                     {path:'/userMsg/blogmanager',name:'blogmanager',component:blogmanager},
                     {path:'/userMsg/usermanager',name:'usermanager',component:usermanager},
+                    {path:'/userMsg/searchblog',name:'searchblog',component:searchblog}, 
+                    {path:'/userMsg/comment',name:'comment',component:comment},  
                 ]
             },
             {path:'/',name:'homepage',component:homepage},
             {path:'/userMsg/seeblog',name:'seeblog',component:seeblog},
             {path:'/userMsg/write',name:'write',component:write},
-            
-            
+            {path:'/searchblog',name:'searchblog',component:searchblog},  
+            {path:'/seeblog',name:'seeblog',component:seeblog},          
         ]
 },
    
