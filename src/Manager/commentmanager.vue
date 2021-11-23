@@ -76,15 +76,19 @@ created(){
 methods:{
     get(){
         this.$get('/all/blog_msg').then(res=>{
-            console.log(res)
             if(res.code===200){
                 this.MsgData=res.result
             }
+        }).catch(e=>{
+        this.$message({
+          type:'error',
+          message:'服务异常，请稍后重试！'+e
         })
+      });
     },
     // 查看
     handleSee(index,row){
-         window.open('http://192.168.1.80:8080/seeblog?id='+row.blog_id)
+         window.open('http://www.jcsy.work:3334/#/seeblog?id='+row.blog_id)
     },
     // 删除
     handleDelete(index,row){
@@ -98,7 +102,12 @@ methods:{
                     this.get()
                 },500)
             }
+        }).catch(e=>{
+        this.$message({
+          type:'error',
+          message:'服务异常，请稍后重试！'+e
         })
+      });
     },
      // 分页选择
     handleCurrentChange(val) {

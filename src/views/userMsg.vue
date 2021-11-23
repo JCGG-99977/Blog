@@ -115,6 +115,11 @@ export default {
             ];
           }
         }
+      }).catch(e=>{
+        this.$message({
+          type:'error',
+          message:'服务异常，请稍后重试！'+e
+        })
       });
     },
     // 进行相关的页面切换

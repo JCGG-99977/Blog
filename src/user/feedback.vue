@@ -21,7 +21,7 @@
           background: '#eef1f6',
           color: '#606266',
         }"
-        :default-sort = "{prop: 'time', order: 'descending'}"
+        :default-sort="{ prop: 'time', order: 'descending' }"
       >
         <el-table-column label="序号">
           <template slot-scope="scope">
@@ -31,8 +31,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="id" label="ID" width="180"> </el-table-column>
-        <el-table-column prop="time" label="日期" sortable>
-        </el-table-column>
+        <el-table-column prop="time" label="日期" sortable> </el-table-column>
         <el-table-column prop="type" label="类型"> </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -109,15 +108,18 @@
       </table>
     </div>
     <el-dialog
-  :title="feedbackData.type"
-  :visible.sync="dialogVisible"
-  width="30%"
-  :before-close="handleClose">
-  内容为：{{feedbackData.content}}
-  <span slot="footer" class="dialog-footer">
-    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-  </span>
-</el-dialog>
+      :title="feedbackData.type"
+      :visible.sync="dialogVisible"
+      width="30%"
+      :before-close="handleClose"
+    >
+      内容为：{{ feedbackData.content }}
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogVisible = false"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -126,13 +128,13 @@ export default {
   name: "feedback",
   data() {
     return {
-        // 反馈历史数据
+      // 反馈历史数据
       tableData: [],
-    //   反馈的类型
+      //   反馈的类型
       value: "",
-    //   反馈的内容
+      //   反馈的内容
       textarea: "",
-    //   反馈的选择类型
+      //   反馈的选择类型
       options: [
         {
           label: "界面设计",
@@ -154,10 +156,10 @@ export default {
       //   分页默认
       currentPage: 1,
       size: 6,
-    //   弹框
-    dialogVisible:false,
-    // 弹框显示的内容
-    feedbackData:''
+      //   弹框
+      dialogVisible: false,
+      // 弹框显示的内容
+      feedbackData: "",
     };
   },
   created() {
@@ -169,13 +171,18 @@ export default {
   methods: {
     //   获取初始数据，反馈历史数据
     get() {
-      this.$get(`/search_userfeeb?user_id=${this.$store.state.id}`).then(
-        (res) => {
+      this.$get(`/search_userfeeb?user_id=${this.$store.state.id}`)
+        .then((res) => {
           if (res.code === 200) {
             this.tableData = res.result;
           }
-        }
-      );
+        })
+        .catch((e) => {
+          this.$message({
+            type: "error",
+            message: "服务异常，请稍后重试！" + e,
+          });
+        });
     },
     //   提交数据
     SendFeedback() {
@@ -191,50 +198,61 @@ export default {
           message: "请输入内容！",
         });
       } else {
-        this.$get(`/dg_msg/user?id=${this.$store.state.id}`).then((res) => {
-          if (res.code === 200) {
-            let data = {
-              user: res.result[0].user,
-              type: that.value,
-              time: that.timestampToTime(Date.now()),
-              content: that.textarea,
-              email: res.result[0].email,
-              user_id: res.result[0].id,
-            };
-            this.$post("/insert_userfeeb", data).then((resp) => {
-              if (resp.code === 200) {
-                setTimeout(() => {
-                  this.get();
-                  this.$message({
-                      type:'success',
-                      message:'反馈成功，感谢您一路的支持！'
-                  })
-                  this.value=''
-                  this.textarea=''
-                }, 500);
-                console.log(resp);
-                this.$get(
-                  `/feeb_back/email?user=${res.result[0].user}&email=${res.result[0].email}`
-                ).then((res) => {
-                  console.log(res.msg);
-                });
-                let data = {
-                  user: res.result[0].user,
-                  type: this.value,
-                  content: this.textarea,
-                };
-                this.$post("/cover_user/feeb_back/email", data).then((res) => {
-                  console.log(res.msg);
-                });
-              }
+        this.$get(`/dg_msg/user?id=${this.$store.state.id}`)
+          .then((res) => {
+            if (res.code === 200) {
+              let data = {
+                user: res.result[0].user,
+                type: that.value,
+                time: that.timestampToTime(Date.now()),
+                content: that.textarea,
+                email: res.result[0].email,
+                user_id: res.result[0].id,
+              };
+              this.$post("/insert_userfeeb", data).then((resp) => {
+                if (resp.code === 200) {
+                  setTimeout(() => {
+                    this.get();
+                    this.$message({
+                      type: "success",
+                      message: "反馈成功，感谢您一路的支持！",
+                    });
+                    this.value = "";
+                    this.textarea = "";
+                  }, 500);
+                  console.log(resp);
+                  this.$get(
+                    `/feeb_back/email?user=${res.result[0].user}&email=${res.result[0].email}`
+                  ).then((res) => {
+                    console.log(res.msg);
+                  });
+                  let data = {
+                    user: res.result[0].user,
+                    type: this.value,
+                    content: this.textarea,
+                  };
+                  this.$post("/cover_user/feeb_back/email", data)
+                    .then(() => {})
+                    .catch((e) => {
+                      this.$message({
+                        type: "error",
+                        message: "服务异常，请稍后重试！" + e,
+                      });
+                    });
+                }
+              });
+            }
+          })
+          .catch((e) => {
+            this.$message({
+              type: "error",
+              message: "服务异常，请稍后重试！" + e,
             });
-            console.log(data);
-          }
-        });
+          });
       }
     },
-    handleClose(done){
-        done()
+    handleClose(done) {
+      done();
     },
     // 分页选择
     handleCurrentChange(val) {
@@ -242,8 +260,8 @@ export default {
     },
     // 查看反馈数据
     handleSee(index, row) {
-        this.dialogVisible=true
-        this.feedbackData=row
+      this.dialogVisible = true;
+      this.feedbackData = row;
     },
     // 时间转换以及补零操作
     timestampToTime(timestamp) {

@@ -137,9 +137,6 @@ export default {
     this.get();
   },
   watch: {
-    //   content(old,newold){
-    //       console.log(old,newold)
-    //   }
   },
   methods: {
     // 初始获取信息
@@ -150,7 +147,12 @@ export default {
             this.userData = res.result[0];
           }
         }
-      );
+      ).catch(e=>{
+        this.$message({
+          type:'error',
+          message:'服务异常，请稍后重试！'+e
+        })
+      });
     },
     //   返回个人信息页面
     backHome() {
@@ -169,8 +171,6 @@ export default {
     change(value, render) {
       this.see_content = value;
       this.content = render;
-      console.log(this.see_content);
-      console.log(this.content);
     },
     // 类型选择
     typeChange() {
@@ -295,6 +295,11 @@ export default {
       this.$post("/upload/", formdata).then((res) => {
         var url = res.url;
         this.$refs.md.$img2Url(pos, url); //这里就是引用ref = md 然后调用$img2Url方法即可替换地址
+      }).catch(e=>{
+        this.$message({
+          type:'error',
+          message:'服务异常，请稍后重试！'+e
+        })
       });
     },
     handleEditorImgDel() {

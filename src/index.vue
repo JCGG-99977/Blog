@@ -151,7 +151,7 @@ export default {
         // }
         // })
         window.open(
-          "http://192.168.1.80:8080/searchblog?content=" + this.search_blog
+          "http://www.jcsy.work:3334/#/searchblog?content=" + this.search_blog
         );
         this.search_blog = "";
         //   this.$get(`/search/see_user_blog?title=${this.search_blog}`).then(res=>{

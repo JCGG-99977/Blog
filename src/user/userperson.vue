@@ -28,14 +28,14 @@
         v-if="imgUrl === ''"
         class="upload-demo"
         drag
-        action="http://192.168.1.80:3333/upload"
+        action="http://www.jcsy.work:3333/upload"
         :on-success="SuccessUpload"
         multiple
       >
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
       </el-upload>
-      <img v-if="imgUrl !== ''" :src="imgUrl" alt="" />
+      <img v-if="imgUrl!== ''" :src="imgUrl" alt="" />
       <span slot="footer" class="dialog-footer">
         <el-button @click="QXupload">取 消</el-button>
         <el-button v-if="imgUrl !== ''" type="primary" @click="submitUpload"
@@ -177,6 +177,11 @@ export default {
         if (res.code === 200) {
           this.UserData = res.result[0];
         }
+      }).catch(e=>{
+        this.$message({
+          type:'error',
+          message:'服务异常，请稍后重试！'+e
+        })
       });
     },
     // 换头像
@@ -187,6 +192,11 @@ export default {
     SuccessUpload(res) {
       if (res.code === 200) {
         this.imgUrl = res.url;
+      }else{
+        this.$message({
+          type:'error',
+          message:'上传失败！'
+        })
       }
     },
     // 上传图片
@@ -206,6 +216,11 @@ export default {
             this.dialogVisible = false;
           }, 500);
         }
+      }).catch(e=>{
+        this.$message({
+          type:'error',
+          message:'服务异常，请稍后重试！'+e
+        })
       });
     },
     // 取消上传
@@ -243,6 +258,11 @@ export default {
             this.ChangeShow = false;
           }, 500);
         }
+      }).catch(e=>{
+        this.$message({
+          type:'error',
+          message:'服务异常，请稍后重试！'+e
+        })
       });
     },
     // 关闭dialog的操作

@@ -126,17 +126,16 @@ export default {
         if (res.code === 200) {
           this.BlogData = res.result;
         }
+      }).catch(e=>{
+        this.$message({
+          type:'error',
+          message:'服务异常，请稍后重试！'+e
+        })
       });
     },
     // 查看
     handleSee(index, row) {
-      // this.$router.replace({
-      //   path: "seeblog",
-      //   query: {
-      //     id: row.id,
-      //   },
-      // });
-      window.open('http://192.168.1.80:8080/seeblog?id='+row.id)
+      window.open('http://www.jcsy.work:3334/#/seeblog?id='+row.id)
     },
     //更新
     handleCkeck(index, row) {
@@ -168,8 +167,12 @@ export default {
             that.get();
           }, 500);
         }
+      }).catch(e=>{
+        this.$message({
+          type:'error',
+          message:'服务异常，请稍后重试！'+e
+        })
       });
-      console.log(data);
     },
     handleClose(done) {
       done();
@@ -183,7 +186,6 @@ export default {
       } else {
         this.$get(`/dg_msg/user?id=${this.dg_msg.user_id}`).then((res) => {
           if (res.code === 200) {
-            // /del_blog/email
             let data = {
               id: this.dg_msg.id,
             };
@@ -222,7 +224,12 @@ export default {
               }
             });
           }
-        });
+        }).catch(e=>{
+        this.$message({
+          type:'error',
+          message:'服务异常，请稍后重试！'+e
+        })
+      });
       }
     },
     // 删除
@@ -230,21 +237,6 @@ export default {
       this.dialogVisible = true;
       this.dg_msg = row;
       this.id = sessionStorage.getItem("id");
-      // /del_user_blog
-      //   let data = {
-      //     id: row.id,
-      //   };
-      //   this.$post("/del_user_blog", data).then((res) => {
-      //     if (res.code === 200) {
-      //       this.$message({
-      //         type: "success",
-      //         message: "删除成功！",
-      //       });
-      //       setTimeout(()=>{
-      //           this.get()
-      //       },500)
-      //     }
-      //   });
     },
     // 分页选择
     handleCurrentChange(val) {
@@ -258,6 +250,5 @@ export default {
 .blogmanager {
   width: 100%;
   height: 100%;
-  /* background-color: lightgoldenrodyellow; */
 }
 </style>

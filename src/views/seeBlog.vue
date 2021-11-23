@@ -43,7 +43,7 @@
             {{ BlogData.user_pl }}
           </li>
         </ul>
-        <span v-if="BlogData.status!==1" style="margin-left: 50px">
+        <span v-if="BlogData.status !== 1" style="margin-left: 50px">
           <span v-if="BlogData.status === 0" style="background-color: #67c23a"
             >待审核</span
           >
@@ -55,7 +55,7 @@
       <!-- 内容 -->
       <div class="blog_text_content" v-html="BlogData.content"></div>
       <!-- 评论 -->
-      <div class="blog_text_pl" v-if="BlogData.status===1">
+      <div class="blog_text_pl" v-if="BlogData.status === 1 &&id!==null">
         <img
           :src="OtherData.user_img"
           style="
@@ -69,31 +69,37 @@
         <el-input
           placeholder="发表一条友善的评论"
           v-model="input"
-          style="width: 60%;margin-left:20px;"
+          style="width: 60%; margin-left: 20px"
           clearable
-          maxlength="40" show-word-limit
+          maxlength="40"
+          show-word-limit
         >
         </el-input>
-        <el-button type="primary" @click="SendPl" style="width: 100px;height:40px;margin-left:20px;margin-top:5px">评论</el-button>
+        <el-button
+          type="primary"
+          @click="SendPl"
+          style="width: 100px; height: 40px; margin-left: 20px; margin-top: 5px"
+          >评论</el-button
+        >
       </div>
       <!-- 查看评论 -->
       <div class="see_blog_text">
-          <!-- 单个评论 -->
-          <div class="blog_text_see" v-for="(item,index) in seePL" :key="index">
-             <img
-          :src="item.user_img"
-          style="
-            width: 50px;
-            heifht: 50px;
-            border-radius: 50%;
-            margin-left: 10px;
-          "
-          alt=""
-        />
-        <span>{{item.user}}</span>（{{item.send_time}}）
-        <p style="margin-top:20px;margin-left:10px">{{item.send_msg}}</p>
-
-          </div>
+        <!-- 单个评论 -->
+        <div class="blog_text_see" v-for="(item, index) in seePL" :key="index">
+          <img
+            :src="item.user_img"
+            style="
+              width: 50px;
+              heifht: 50px;
+              border-radius: 50%;
+              margin-left: 10px;
+            "
+            alt=""
+          />
+          <span>{{ item.user }}</span
+          >（{{ item.send_time }}）
+          <p style="margin-top: 20px; margin-left: 10px">{{ item.send_msg }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -108,8 +114,9 @@ export default {
       UserData: "",
       OtherData: "",
       input: "",
-    //   查看评论
-    seePL:[]
+      //   查看评论
+      seePL: [],
+      id:sessionStorage.getItem('id')
     };
   },
   created() {
@@ -117,71 +124,101 @@ export default {
   },
   methods: {
     get() {
-      this.$get(`/share/see_user_blog?id=${this.$route.query.id}`).then(
-        (res) => {
+      this.$get(`/share/see_user_blog?id=${this.$route.query.id}`)
+        .then((res) => {
           if (res.code === 200) {
             this.BlogData = res.result[0];
-            this.SeeMsg()
-            this.$get(`/dg_msg/user?id=${res.result[0].user_id}`).then(
-              (resp) => {
+            this.SeeMsg();
+            this.$get(`/dg_msg/user?id=${res.result[0].user_id}`)
+              .then((resp) => {
                 if (resp.code === 200) {
                   this.UserData = resp.result[0];
                 }
-              }
-            );
+              })
+              .catch((e) => {
+                this.$message({
+                  type: "error",
+                  message: "服务异常，请稍后重试！" + e,
+                });
+              });
             if (this.$store.state.id === "") {
               this.$store.state.id = sessionStorage.getItem("id");
             }
-            this.$get(`/dg_msg/user?id=${this.$store.state.id}`).then((res) => {
-              if (res.code === 200) {
-                this.OtherData = res.result[0];
-              }
-            });
+            this.$get(`/dg_msg/user?id=${this.$store.state.id}`)
+              .then((res) => {
+                if (res.code === 200) {
+                  this.OtherData = res.result[0];
+                }
+              })
+              .catch((e) => {
+                this.$message({
+                  type: "error",
+                  message: "服务异常，请稍后重试！" + e,
+                });
+              });
           }
-        }
-      );
+        })
+        .catch((e) => {
+          this.$message({
+            type: "error",
+            message: "服务异常，请稍后重试！" + e,
+          });
+        });
     },
     // 发表评论
-    SendPl(){
-        if(this.input===''){
-            this.$message({
-                type:'warning',
-                message:'请输入内容'
-            })
-        }else{
-            let data={
-            user:this.OtherData.nickname,
-            send_time:this.timestampToTime(Date.now()),
-            send_msg:this.input,
-            user_id:this.OtherData.id,
-            blog_title:this.BlogData.title,
-            blog_id:this.BlogData.id,
-            user_img:this.OtherData.user_img
-        }
-        this.$post('/msg/insert_blog',data).then(res=>{
-            if(res.code===200){
-                this.$message({
-                    type:'success',
-                    message:'发表成功！'
-                })
-                setTimeout(()=>{
-                    this.SeeMsg()
-                    this.input=''
-                },500)
+    SendPl() {
+      if (this.input === "") {
+        this.$message({
+          type: "warning",
+          message: "请输入内容",
+        });
+      } else {
+        let data = {
+          user: this.OtherData.nickname,
+          send_time: this.timestampToTime(Date.now()),
+          send_msg: this.input,
+          user_id: this.OtherData.id,
+          blog_title: this.BlogData.title,
+          blog_id: this.BlogData.id,
+          user_img: this.OtherData.user_img,
+        };
+        this.$post("/msg/insert_blog", data)
+          .then((res) => {
+            if (res.code === 200) {
+              this.$message({
+                type: "success",
+                message: "发表成功！",
+              });
+              setTimeout(() => {
+                this.SeeMsg();
+                this.input = "";
+              }, 500);
             }
-        })
-        } 
+          })
+          .catch((e) => {
+            this.$message({
+              type: "error",
+              message: "服务异常，请稍后重试！" + e,
+            });
+          });
+      }
     },
     // 查看评论
-    SeeMsg(){
-        this.$get(`/blog_msg?blog_id=${this.BlogData.id}`).then(res=>{
-            console.log(res)
-            if(res.code===200){
-                this.seePL=res.result
-            }
+    SeeMsg() {
+      this.$get(`/blog_msg?blog_id=${this.BlogData.id}`)
+        .then((res) => {
+          if (res.code === 200) {
+            this.seePL = res.result;
+          }
         })
+        .catch((e) => {
+          this.$message({
+            type: "error",
+            message: "服务异常，请稍后重试！" + e,
+          });
+        });
     },
-     // 时间转换以及补零操作
+    // 时间转换以及补零操作
     timestampToTime(timestamp) {
       var date = new Date(timestamp);
       var Y = date.getFullYear() + "-";
@@ -207,11 +244,9 @@ export default {
   background-color: #fff;
   margin: 0 auto;
   margin-top: 10px;
-  /* display: inline-block; */
 }
 .head_seeblog {
   height: 80px;
-  /* background-color: lightblue; */
   font-size: 45px;
   font-weight: 600;
   line-height: 80px;
@@ -232,7 +267,6 @@ img {
   margin-left: 20px;
 }
 .blog_text_content {
-  /* width: 100%; */
   padding-left: 10px;
   padding-right: 10px;
   margin-top: 10px;
@@ -241,34 +275,38 @@ img {
 .blog_text_pl {
   width: 100%;
   height: 50px;
-  /* background-color: lightcoral; */
-   box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
   display: flex;
   line-height: 50px;
 }
 /* 查看评论 */
-.see_blog_text{
-    width: 100%;
-   box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
-    margin-top: 10px;
-    margin-bottom: 10px;
-
+.see_blog_text {
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
-.blog_text_see{
-    width: 100%;
-    background-color: #E4E7ED;
-    display: flex;
-    margin-bottom: 20px;
+.blog_text_see {
+  width: 100%;
+  background-color: #e4e7ed;
+  display: flex;
+  margin-bottom: 20px;
+}
+a{
+  color:#409EFF
+}
+a:hover{
+  color: #F56C6C;
 }
 @media screen and (max-width: 600px) {
-  .seeblog_content{
+  .seeblog_content {
     width: 400px;
   }
-  .blog_text_msg ul li{
+  .blog_text_msg ul li {
     margin-left: 5px;
     font-size: 10px;
   }
-  .blog_text_msg span{
+  .blog_text_msg span {
     font-size: 10px;
   }
 }

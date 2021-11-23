@@ -159,6 +159,11 @@ export default {
         this.searcgData = res.result;
         let p = document.getElementById("search_count");
         p.innerHTML = `搜索到关键词为： <b>${this.content}</b>  的数据有<b>  ${res.result.length}  </b>条`;
+      }).catch(e=>{
+        this.$message({
+          type:'error',
+          message:'服务异常，请稍后重试！'+e
+        })
       });
     },
     // 热门推荐数据
@@ -167,6 +172,11 @@ export default {
         if (res.code === 200) {
           this.BlogData = res.result;
         }
+      }).catch(e=>{
+        this.$message({
+          type:'error',
+          message:'服务异常，请稍后重试！'+e
+        })
       });
     },
     // 搜索方法
@@ -183,14 +193,17 @@ export default {
           let p = document.getElementById("search_count");
           p.innerHTML = `搜索到关键词为： <b>${this.content}</b>  的数据有  <b>${res.result.length}</b>  条`;
           this.HostGet();
-        });
+        }).catch(e=>{
+        this.$message({
+          type:'error',
+          message:'服务异常，请稍后重试！'+e
+        })
+      });
       }
     },
     // 查看详细
     SeeBlog(item) {
-      console.log(item);
-      console.log(item.id);
-      window.open("http://192.168.1.80:8080/seeblog?id=" + item.id);
+      window.open("http://www.jcsy.work:3334/#/seeblog?id=" + item.id);
     },
   },
 };

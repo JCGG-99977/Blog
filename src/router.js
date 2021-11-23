@@ -37,7 +37,7 @@ Router.prototype.push = function push(location) {
 }
 
 export default new Router({
-    mode:'history',
+    // mode:'history',
   routes: [
     { path: '/login', name: 'Login', component: Login },
     {

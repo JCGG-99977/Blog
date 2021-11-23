@@ -54,22 +54,18 @@ export default {
     get() {
       this.$get("/see_user_blog?user_id=" + sessionStorage.getItem("id")).then(
         (res) => {
-          console.log(res);
           this.blogData = res.result;
         }
-      );
+      ).catch(e=>{
+        this.$message({
+          type:'error',
+          message:'服务异常，请稍后重试！'+e
+        })
+      });
     },
     // 查看详细
     SeeBlog(item){
-        console.log(item)
-        console.log(item.id)
-        // this.$router.replace({
-        //     path: 'seeblog',
-        // query: {
-        //     id:item.id
-        // }
-        // })
-         window.open('http://192.168.1.80:8080/seeblog?id='+item.id)
+         window.open('http://www.jcsy.work:3334/#/seeblog?id='+item.id)
     }
   },
 };
